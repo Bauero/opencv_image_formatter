@@ -5,8 +5,8 @@ using OpenCV library for Python
 """
 
 import cv2
-# import matplotlib.pylab as plt
-# import pandas as pd
+import matplotlib.pylab as plt
+import pandas as pd
 import tkinter as tk
 from tkinter import Canvas, NW, Scale, HORIZONTAL, DoubleVar, E, Button
 from PIL import Image, ImageTk
@@ -63,6 +63,16 @@ def update_blue(val):
     blue = int(float(val))
     update_image()
 
+def show_edges():
+    
+    im_gray = cv2.cvtColor(image_RGB.copy(), cv2.IMREAD_GRAYSCALE)
+    im_blur = cv2.GaussianBlur(im_gray, (3,3), 0)
+    edges = cv2.Canny(im_blur, 40, 70)
+
+    plt.imshow(edges, cmap = 'gray')
+    plt.show()
+
+
 source_file_path = "cat_images/cat.4003.jpg"
 
 image = cv2.imread(source_file_path)
@@ -108,6 +118,10 @@ b2 = Button(root, height=1, width=10, text="Negate colors",
             command = negate_colors, default="normal")
 b2.pack(anchor=E)
 
+b3 = Button(root, height=1, width=10, text="Edges", 
+            command = show_edges, default="normal")
+b3.pack(anchor=E)
+
 canvas = Canvas(root, width=width, height=height)
 canvas.pack()
 tk_image = convert_to_tk_image(image_RGB)
@@ -115,3 +129,4 @@ image_on_canvas = canvas.create_image(0, 0, anchor=NW, image=tk_image)
 
 # Start the Tkinter main loop
 root.mainloop()
+exit()
