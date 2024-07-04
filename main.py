@@ -20,6 +20,7 @@ root.geometry("1280x720")
 red = 0
 green = 0
 blue = 0
+image_negated = False
 
 # Function to convert OpenCV image to a PhotoImage
 def convert_to_tk_image(cv_image):
@@ -30,13 +31,16 @@ def convert_to_tk_image(cv_image):
 # Function to update the image based on the slider value
 def update_image():
 
-    global red, green, blue
+    global red, green, blue, image_negated
 
     modified_image = image_RGB.copy()
 
     modified_image[:, :, 0] = cv2.add(modified_image[:, :, 0], red)
     modified_image[:, :, 1] = cv2.add(modified_image[:, :, 1], green)
     modified_image[:, :, 2] = cv2.add(modified_image[:, :, 2], blue)
+
+    if image_negated:
+        modified_image = abs(255 - modified_image[:,:])
 
     tk_image = convert_to_tk_image(modified_image)
     canvas.itemconfig(image_on_canvas, image=tk_image)
@@ -91,14 +95,23 @@ def reset_colors():
     s2.set(0.0)
     s3.set(0.0)
 
+def negate_colors():
+    global image_negated
+    image_negated = True if not image_negated else False
+    update_image()
+
+b1 = Button(root, height=1, width=10, text="Reset colors", 
+            command = reset_colors, default="normal")
+b1.pack(anchor=E)
+
+b2 = Button(root, height=1, width=10, text="Negate colors", 
+            command = negate_colors, default="normal")
+b2.pack(anchor=E)
+
 canvas = Canvas(root, width=width, height=height)
 canvas.pack()
 tk_image = convert_to_tk_image(image_RGB)
 image_on_canvas = canvas.create_image(0, 0, anchor=NW, image=tk_image)
-
-b1 = Button(root, height=10, width=10, text="Reset colors", 
-            command = reset_colors, default="normal")
-b1.pack(anchor=E)
 
 # Start the Tkinter main loop
 root.mainloop()
